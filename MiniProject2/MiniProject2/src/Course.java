@@ -13,9 +13,13 @@ public class Course {
     List<Assignment> assignments;
     List<Assignment> projects;
     private LocalDate examDate;
+    private String examDetail;
     private int studentsNum = 0;
     private int term;
     private double highestGrade;
+    double grade;
+    List<Double> grades = new ArrayList<>();
+
 
 
     // Constructor
@@ -29,11 +33,12 @@ public class Course {
         this.projects = new ArrayList<>();
     }
 
+
     // Methods
     public void printStudents() {
         System.out.println("List of students of course \"" + this.courseName + "\": ");
         for (Student student : this.students) {
-            System.out.println("Student ID for this course: " + student.studentID);
+            System.out.println("Student ID for this course: " + student.getID());
         }
     }
 
@@ -47,44 +52,46 @@ public class Course {
         this.studentsNum--;
     }
 
- /*   public double calculateHighestGrade() {
-        if (students.isEmpty()) {
+    public double calculateHighestGradeINCourse() {
+        if (grades.isEmpty()) {
             return 0.0;
         }
-        double highestGrade = 0.0;
-        for (Student student : students) {
-            double studentGrade = student.getGradeForCourse(this);
-            if (studentGrade > highestGrade) {
-                highestGrade = studentGrade;
-            }}
-        return highestGrade;
-        }*/
-
-    double highestScore(){
-        double max =0;
-        for(int i=0;i<students.size();i++){
-            for (int j=0;j<students.get(i).courses.size();j++){
-                if(students.get(i).courses.get(j) == this){
-                    max = Math.max(max,students.get(i).grades.get(j));
-                }
+        double highestGrade = grades.get(0);
+        for (Double grade : grades) {
+            if (grade > highestGrade) {
+                highestGrade = grade;
             }
         }
-        return max;
+        return highestGrade;
     }
 
-    public double calculateTotalGradesAvg() {
-        double total = 0.0;
-        for (Student student : students) {
-            for(int i = 0 ; i < student.courses.size() ; i++){
-                if(this.equals(student.courses.get(i))){
 
-                }
-            total += student.getGrade();
+    public double calculateLowestScoreInCourse() {
+        if (grades.isEmpty()) {
+            return 0.0;
         }
+        double lowestGrade = grades.get(0);
+        for (Double grade : grades) {
+            if (grade < lowestGrade) {
+                lowestGrade = grade;
+            }
+        }
+        return lowestGrade;
+    }
 
+
+    public double calculateTotalGradesAvgInCourse() {
+        if (grades.isEmpty()) {
+            return 0.0;
+        }
+        double totalGrades = 0.0;
+        for (Double grade : grades) {
+            totalGrades += grade;
+        }
+        return totalGrades / grades.size();
     }
-        return total / students.size();
-    }
+
+
     public void printProjects(){
         for(Assignment project : this.projects){
         System.out.println("the project of course " + this.courseName + " is " +project.assignmentName);
@@ -141,6 +148,9 @@ public class Course {
 
     public String getName() {
         return courseName;
+    }
+    public List<Double> getGrades(){
+        return this.grades;
     }
 
 

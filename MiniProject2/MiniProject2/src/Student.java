@@ -1,34 +1,30 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Student extends User {
     // properties
 
-    int courseNum = 0;
-    String major;
-    int vahedNum = 0;
-    String email;
-    String password;
-    String phoneNumber;
-    List<Course> courses = new ArrayList<>();
-    double totalGradesAvg;
-    String studentID;
-    int term;
-    int currentTerm;
+    private int courseNum = 0;
+    private String major;
+    private int vahedNum = 0;
+    private String email;
+    private String password;
+    private String phoneNumber;
+    private List<Course> courses = new ArrayList<>();
+    private double totalGradesAvg;
+    private String studentID;
+    private int term;
+    private int currentTerm;
+    Uni uni = new Uni();
 
-    double grade;
-    List<Double> grades = new ArrayList<>();
+
 
 
     // constructor
     public Student(String name, String surname, int age, String studentID, String major, String email, String phoneNumber, String password) {
-        super(name , surname , age);
-        this.studentID = studentID;
+        super(name , surname , age,studentID);
         this.courses = new ArrayList<>();
-        this.grades = new ArrayList<>();
         this.totalGradesAvg = calculateTotalGradesAvg();
 
     }
@@ -47,7 +43,7 @@ public class Student extends User {
                 this.vahedNum -= course.getVahed();
                 this.courseNum--;
                 course.removeStudent(this);
-                grades.remove(i);
+                courses.get(i).getGrades().remove(courses.get(i).getGrades().get(i));
             }
         }
     }
@@ -69,32 +65,27 @@ public class Student extends User {
 
     public double calculateTotalGradesAvg() {
         double total = 0.0;
-        for (Double grade : grades) {
-            total += grade;
-        }
-        return total / grades.size();
-    }
+        int totalGradesCount = 0;
 
-/*    public double getGradeForCourse(Course course) {
-        for (int i = 0; i < courses.size(); i++) {
-            if (courses.get(i).equals(course)) {
-                return grades.get(i);
+        for (Course course : courses) {
+            for (Double grade : course.getGrades()) {
+                total += grade;
+                totalGradesCount++;
             }
         }
-        return 0.0;
-    }*/
+        if (totalGradesCount > 0) {
+            return total / totalGradesCount;
+        } else {
+            return 0.0;
+        }
+    }
+
 
 
 
 
     // Getters and Setters
-    public double getGrade() {
-        return grade;
-    }
 
-    public String getStudentID() {
-        return studentID;
-    }
 
     public List<Course> getCourses() {
         return courses;
@@ -103,7 +94,63 @@ public class Student extends User {
     public double getTotalGradesAvg() {
         return totalGradesAvg;
     }
+    public String getMajor(){
+        return this.major;
+    }
+    public String getEmail(){
+        return this.email;
+    }
+    public String getPhoneNumber(){
+        return this.phoneNumber;
+    }
+    public String getStudentID(){
+        return this.studentID;
+    }
+    public void setPassword(String password){
+        while (this.password.equals(password)){
+            System.out.println("YOUR PASS CANT BE THE SAME! Please Enter a new Password");
+            password = scanner.next();
+
+        }
+        while (!uni.passwordValidator(password)){
+            System.out.println("YOUR PASSWORD IS NOT VALID!");
+            password = scanner.next();
+        }
+        this.password = password;
+
+    }
+    public void setEmail(String email){
+        while (!uni.emailValidator(email)){
+            System.out.println("Please enter a valid email!");
+            email = scanner.next();
+        }
+        this.email = email;
+
+    }
+    public void setPhoneNumber(String phoneNumber){
+        while (!uni.emailValidator(phoneNumber)){
+            System.out.println("Please enter a valid phone number!");
+            phoneNumber = scanner.next();
+        }
+        this.phoneNumber = phoneNumber;
+
+    }
+    public int getTerm(){
+        return this.term;
+    }
+    public int getVahedNum(){
+        return this.vahedNum;
+    }
 
 
-    public List<Double> getGrades(){return grades;}
+
+
+
+    public Map<Course, List<Double>> getCourseGrades() {
+        Map<Course, List<Double>> courseGrades = new HashMap<>();
+        for (Course course : courses) {
+            courseGrades.put(course, course.getGrades());
+        }
+        return courseGrades;
+    }
 }
