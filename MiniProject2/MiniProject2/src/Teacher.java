@@ -1,6 +1,7 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Teacher extends User{
     // Properties
@@ -14,7 +15,7 @@ public class Teacher extends User{
     // Constructor
 
     public Teacher(String name, String teacherSurname, int age, String teacherID, String email, String phoneNumber, String password) {
-        super(name,teacherSurname, age);
+        super(name,teacherSurname, age, teacherID);
         this.teacherCourses = new ArrayList<>();
         this.teacherID =teacherID;
         this.teacherCourses = new ArrayList<>();
@@ -27,7 +28,7 @@ public class Teacher extends User{
 
     public void removeStudentFromCourse(Student student, Course course) {
         course.removeStudent(student);
-        System.out.println("student " + student.studentID + " has been removed." );
+        System.out.println("student " + student.getID() + " has been removed." );
     }
 
     public void addProjectToCourse(Assignment project, Course course) {
@@ -38,19 +39,22 @@ public class Teacher extends User{
         course.getProjects().remove(project);
     }
 
-    public void assignGrade(Student student, Course course, double grade) {
-        List<Student> students = course.getStudents();
-        for (Student s : students) {
-            if (s.equals(student)) {
-                student.grade = grade;
-                student.getGrades().add(grade);
-                System.out.println("Grade assigned successfully to student " + student.getStudentID() + ": " + grade);
-                System.out.println("Grades list for student " + student.getStudentID() + ": " + student.getGrades());
-                return;
+    public void assignGradeToStudent(Student student, Course course, double grade) {
+        if (course.getStudents().contains(student)) {
+            Map<Course, List<Double>> studentGrades = student.getCourseGrades();
+            if (studentGrades.containsKey(course)) {
+                studentGrades.get(course).add(grade);
+            } else {
+                List<Double> grades = new ArrayList<>();
+                grades.add(grade);
+                studentGrades.put(course, grades);
             }
+            System.out.println("Grade assigned successfully to student " + student.getID() + " for course " + course.getCourseName() + ": " + grade);
+        } else {
+            System.out.println("Student " + student.getID() + " is not enrolled in course " + course.getCourseName());
         }
-        System.out.println("Student not found in the course.");
     }
+
 
     public void setAssignmentDeadline(Course course, Assignment assignment, LocalDate deadline) {
         if (course.getTeacher().equals(this)) {
